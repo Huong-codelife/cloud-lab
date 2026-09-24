@@ -2,8 +2,18 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// API URL trỏ đến backend container đang chạy trên localhost:5000
-const API_URL = 'http://localhost:5000/api/students';
+const getApiUrl = () => {
+  const { hostname, protocol } = window.location;
+
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `${protocol}//${hostname}:5000/api/students`;
+  }
+
+  const backendHostname = hostname.replace(/-3000(?=\.)/, '-5000');
+  return `${protocol}//${backendHostname}/api/students`;
+};
+
+const API_URL = getApiUrl();
 
 function App() {
   const [students, setStudents] = useState([]);
@@ -108,9 +118,7 @@ function App() {
         
         {/* Tiêu đề chính */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-blue-800 tracking-tight">
-            Hệ Thống Quản Lý Sinh Viên
-          </h1>
+         <h1>Hệ Thống Quản Lý Sinh Viên - Version 2.0</h1>
           <p className="mt-3 text-lg text-gray-600">Trường Đại học Công nghệ Cloud-Lab</p>
         </div>
 
