@@ -25,6 +25,11 @@ app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
+// API GET /api/hello
+app.get('/api/hello', (req, res) => {
+  res.status(200).json({ message: 'Hello from MERN backend!' });
+});
+
 // API GET /api/students
 app.get('/api/students', async (req, res) => {
   try {
