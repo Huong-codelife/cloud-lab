@@ -3,11 +3,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const getApiUrl = () => {
-  // Nếu có biến môi trường VITE_API_URL thì dùng nó (cho Render)
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-
   const { hostname, protocol } = window.location;
 
   // Local development
@@ -21,9 +16,8 @@ const getApiUrl = () => {
     return `${protocol}//${backendHostname}/api/students`;
   }
 
-  // Render: thay "frontend" thành "backend" trong hostname
-  const renderBackend = hostname.replace('mern-frontend', 'mern-backend');
-  return `${protocol}//${renderBackend}/api/students`;
+  // Render deployment
+  return 'https://mern-backend-235007.onrender.com/api/students';
 };
 
 const API_URL = getApiUrl();
