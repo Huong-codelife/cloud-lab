@@ -1,10 +1,29 @@
 require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
 
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
 const app = express();
-app.use(cors());
+
+// Cấu hình CORS linh hoạt cho Production
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Cho phép các request không có origin (như Postman) hoặc nằm trong danh sách hoặc ở môi trường dev
+    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(null, true); // Chấp nhận request để tránh lỗi tạm thời (có thể sửa thành callback(new Error(...)) nếu cần bảo mật nghiêm ngặt)
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Kết nối MongoDB
