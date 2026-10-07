@@ -1,24 +1,31 @@
-# Câu 51: Base Image Node.js
-FROM node:20-alpine
+# Stage 1: Build ứng dụng React với Node.js
+FROM node:20-alpine AS build
 
-# Câu 52: Thiết lập thư mục làm việc bên trong Container
 WORKDIR /app
 
-# Câu 53: Sao chép package.json và package-lock.json
+# Sao chép package.json và cài đặt dependencies
 COPY package*.json ./
-
-# Câu 54: Cài đặt dependencies và cài thêm gói 'serve' để chạy bản build
 RUN npm install
-RUN npm install -g serve
 
-# Câu 55: Sao chép toàn bộ source code React vào Container
+# Sao chép source code và build
 COPY . .
-
-# Câu 56: Build ứng dụng React (tạo ra thư mục dist)
 RUN npm run build
 
-# Khai báo port 3000 phục vụ giao diện
+# Stage 2: Chạy với Nginx (nhẹ, nhanh, production-ready)
+FROM nginx:alpine
+
+# Xóa config mặc định của Nginx
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Sao chép template config Nginx (dùng biến $PORT)
+COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template
+
+# Sao chép file build từ stage 1 vào Nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Port mặc định (Render sẽ override bằng biến PORT)
+ENV PORT=3000
 EXPOSE 3000
 
-# Khởi chạy web tĩnh từ thư mục dist vừa build (Câu 57)
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Dùng envsubst để thay $PORT trong template, rồi khởi chạy Nginx
+CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
