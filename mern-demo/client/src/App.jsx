@@ -3,14 +3,27 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const getApiUrl = () => {
+  // Nếu có biến môi trường VITE_API_URL thì dùng nó (cho Render)
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
   const { hostname, protocol } = window.location;
 
+  // Local development
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return `${protocol}//${hostname}:5000/api/students`;
   }
 
+  // Docker container (tên chứa port)
   const backendHostname = hostname.replace(/-3000(?=\.)/, '-5000');
-  return `${protocol}//${backendHostname}/api/students`;
+  if (backendHostname !== hostname) {
+    return `${protocol}//${backendHostname}/api/students`;
+  }
+
+  // Render: thay "frontend" thành "backend" trong hostname
+  const renderBackend = hostname.replace('mern-frontend', 'mern-backend');
+  return `${protocol}//${renderBackend}/api/students`;
 };
 
 const API_URL = getApiUrl();
