@@ -1,6 +1,7 @@
 # Cloud Computing Laboratory
-Student Name: Nguyễn Văn A
-Student ID: B1234567
-Class: DI2699A1
+Student Name: Nguyễn Văn Hưởng
+Student ID: 235007
+Class: DH23TIN05
 Updated at: 2026
 Created  at: 2026
+
